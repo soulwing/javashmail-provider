@@ -1,0 +1,1 @@
+protocol=file; type=transport; class=org.soulwing.mail.transport.FileTransport; vendor=Soulwing.ORG
