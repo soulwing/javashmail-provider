@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.soulwing</groupId>
   <artifactId>javamail-file-provider</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>JavaMail File Provider</name>
   <description>A JavaMail Provider for a Transport that appends sent messages to a file.</description>
   <scm>
