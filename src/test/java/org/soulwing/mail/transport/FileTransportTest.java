@@ -49,18 +49,11 @@ import org.junit.Test;
  */
 public class FileTransportTest {
 
-  private Session session;
-  private Transport transport;
   private File file;
   
   @Before  
   public void setUp() throws Exception {
     file = File.createTempFile("mail", ".txt");    
-    Properties properties = new Properties();
-    properties.setProperty(FileTransport.FILE_PATH, file.toString());
-    properties.setProperty("mail.transport.protocol", "file");
-    session = Session.getInstance(properties);
-    transport = session.getTransport();
   }
   
   @After
@@ -70,6 +63,8 @@ public class FileTransportTest {
 
   @Test
   public void testSendMessage() throws Exception {
+    Session session = newSession();
+    Transport transport = session.getTransport();
     MimeMessage message = newMessage("Test message", session);
     transport.sendMessage(message, message.getAllRecipients());
     MimeMessage result = readMessageFromFile(file, session);
@@ -82,6 +77,8 @@ public class FileTransportTest {
 
   @Test
   public void testAppendMessage() throws Exception {
+    Session session = newSession(FileTransport.APPEND, "true");
+    Transport transport = session.getTransport();
     MimeMessage message1 = newMessage("Message 1", session);
     transport.sendMessage(message1, message1.getAllRecipients());
     MimeMessage message2 = newMessage("Message 2", session);
@@ -91,6 +88,25 @@ public class FileTransportTest {
     try {
       assertThat(findMessageId(reader), is(true));
       assertThat(findMessageId(reader), is(true));
+    }
+    finally {
+      reader.close();
+    }
+  }
+
+  @Test
+  public void testOverwriteMessage() throws Exception {
+    Session session = newSession(FileTransport.APPEND, "false");
+    Transport transport = session.getTransport();
+    MimeMessage message1 = newMessage("Message 1", session);
+    transport.sendMessage(message1, message1.getAllRecipients());
+    MimeMessage message2 = newMessage("Message 2", session);
+    transport.sendMessage(message2, message2.getAllRecipients());
+    
+    BufferedReader reader = new BufferedReader(new FileReader(file));
+    try {
+      assertThat(findMessageId(reader), is(true));
+      assertThat(findMessageId(reader), is(false));
     }
     finally {
       reader.close();
@@ -133,5 +149,21 @@ public class FileTransportTest {
     return false;
   }
 
+  private Session newSession(String... pairs) throws MessagingException {
+    Properties properties = defaultProperties();
+    for (int i = 0; i < pairs.length / 2; i++) {
+      properties.setProperty(pairs[2*i], pairs[2*i + 1]);
+    }
+    return Session.getInstance(properties);
+  }
+  
+  private Properties defaultProperties() {
+    Properties properties = new Properties();
+    properties.setProperty(FileTransport.FILE_PATH, file.toString());
+    properties.setProperty("mail.transport.protocol", "file");
+    return properties;
+  }
+  
 }
+
 
