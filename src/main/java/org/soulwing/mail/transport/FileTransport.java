@@ -18,7 +18,8 @@
  */
 package org.soulwing.mail.transport;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,6 +41,9 @@ public class FileTransport extends Transport {
   private static final String FILE_PROVIDER = "mail.file";
   public static final String FILE_PATH = FILE_PROVIDER + ".path";
   public static final String APPEND = FILE_PROVIDER + ".append";
+
+  private final int CR = '\r';
+  private final int LF = '\n';
   
   private final SessionProperties properties;
   
@@ -62,23 +66,49 @@ public class FileTransport extends Transport {
     String path = properties.getRequiredProperty(FILE_PATH);
     boolean append = properties.getBooleanProperty(APPEND, true);
     try {
-      File file = new File(path);
-      OutputStream outputStream = new FileOutputStream(file, append);
-      try {
-        message.writeTo(outputStream);
-      }
-      finally {
-        try {
-          outputStream.close();
-        }
-        catch (IOException ex) {
-          ex.printStackTrace(System.err);
-        }
-      }
+      writeMessage(message, path, append);
     }
     catch (IOException ex) {
       throw new MessagingException("error writing message to file", ex);
     }
+  }
+
+  private void writeMessage(Message message, String path, boolean append)
+      throws MessagingException, IOException, FileNotFoundException {
+
+    byte[] messageData = createMessageData(message);
+    OutputStream outputStream = new FileOutputStream(path, append);
+    try {
+      writeMessageData(messageData, outputStream);
+    }
+    finally {
+      try {
+        outputStream.close();
+      }
+      catch (IOException ex) {
+        ex.printStackTrace(System.err);
+      }
+    }
+  }
+
+  private byte[] createMessageData(Message message) throws MessagingException, 
+      IOException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    message.writeTo(outputStream);
+    outputStream.close();
+    return outputStream.toByteArray();
+  }
+
+  private void writeMessageData(byte[] messageData, OutputStream outputStream)
+      throws IOException {
+    if (messageData.length == 0) return;
+    outputStream.write(messageData);
+    if (messageData[messageData.length - 1] != LF) {
+      outputStream.write(CR);
+      outputStream.write(LF);
+    }
+    outputStream.write(CR);
+    outputStream.write(LF);
   }
 
 }

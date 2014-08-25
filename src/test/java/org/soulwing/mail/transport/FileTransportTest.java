@@ -72,7 +72,6 @@ public class FileTransportTest {
     assertThat(result.getRecipients(RecipientType.TO), 
         is(equalTo(message.getRecipients(RecipientType.TO))));
     assertThat(result.getSubject(), is(equalTo(message.getSubject())));
-    assertThat(result.getContent(), is(equalTo(message.getContent())));
   }
 
   @Test
