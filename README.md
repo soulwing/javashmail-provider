@@ -1,5 +1,5 @@
-javamail-file-transport
-=======================
+javamail-file-provider
+======================
 
-A JavaMail Transport that appends sent messages to a file.  This transport
-is useful for testing applications that send mail.
+A JavaMail Provider for a Transport that appends sent messages to a file.  
+This provider is useful for testing applications that send mail.
