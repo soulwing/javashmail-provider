@@ -10,24 +10,24 @@ Configuration Properties
 These properties must be set on the ```javax.mail.Session``` object in order to 
 use the file-based transport.
 
-* ```mail.transport.protocol``` -- set this to ```file```
-* ```mail.file.path``` -- path to the file to which sent messages will be
+* `mail.transport.protocol` -- set this to `file`
+* `mail.file.path` -- path to the file to which sent messages will be
   written
-* ```mail.file.append``` -- ```true|false``` to indicate whether sent messages
+* `mail.file.append` -- `true|false` to indicate whether sent messages
   should be appended to the end of the file (or should overwrite the file)
 
 Tomcat Configuration
 --------------------
 
-Copy the ```javamail-file-provider.x.y.z.jar``` file into Tomcat's ```lib```
-directory.  Also make sure that JavaMail's ```mail.jar``` is in Tomcat's 
-```lib``` directory.
+Copy the `javamail-file-provider.x.y.z.jar` file into Tomcat's `lib`
+directory.  Also make sure that JavaMail's `mail.jar` is in Tomcat's 
+`lib` directory.
 
-Make sure that your application's ```WEB-INF/lib``` does not include 
-```mail.jar```.
+Make sure that your application's `WEB-INF/lib` does not include 
+`mail.jar`.
 
 Add a global naming resource that uses the file-based transport provider in
-your ```server.xml```
+your `server.xml`.
 
 ```
 <Server>
@@ -40,7 +40,7 @@ your ```server.xml```
               mail.file.append="true"/>
   </GlobalNamingResources>
   ...
-</server>
+</Server>
 ```
 
 Add a link to the mail resource to your application's context configuration:
@@ -58,12 +58,12 @@ Add a link to the mail resource to your application's context configuration:
 Wildfly/JBossAS Configuration
 -----------------------------
 
-Untar the ```javamail-file-provider-x.y.z-modules.tar.gz``` file located in the 
-```target``` folder of the build inside of the top-level directory of your
+Untar the `javamail-file-provider-x.y.z-modules.tar.gz` file located in the 
+`target` folder of the build inside of the top-level directory of your
 Wildfly/JBossAS server installation.  This will install the provider as a
 module.
 
-Edit your configuration (either ```standalone.xml``` or ```domain.xml```) to
+Edit your configuration (either `standalone.xml` or `domain.xml`) to
 make the provider module available to all deployments in the container.
 
 ```
@@ -94,7 +94,7 @@ transport.
 ```
 
 Add a resource reference for the mail resource to your application's 
-```jboss-web.xml``` descriptor.
+`jboss-web.xml` descriptor.
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
