@@ -1,0 +1,23 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+  
+  <module name="org.soulwing.mail">
+    <match>
+      <includes>
+        <include>
+          <groupId>org.soulwing</groupId>
+          <artifactId>javamail-file-provider</artifactId>
+        </include>
+      </includes>
+    </match>
+    
+    <apply-to-module>
+      <dependencies>
+        <module name="javax.mail" />
+        <module name="javax.activation"/>
+        <module name="javax.api" />
+      </dependencies>
+    </apply-to-module>
+    
+  </module>
+
+</modules>
