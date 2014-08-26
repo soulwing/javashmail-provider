@@ -55,6 +55,15 @@
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.5</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.4.1</version>
+        </plugin>
+        <plugin>
+          <groupId>de.smartics.maven.plugin</groupId>
+          <artifactId>smartics-jboss-modules-maven-plugin</artifactId>
+          <version>1.0.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -161,12 +170,30 @@
               </execution>
             </executions>
             <configuration>
+              <attach>true</attach>
               <dependencyExcludes>
                 <exclude>
                   <groupId>javax.mail</groupId>
                   <artifactId>javax.mail-api</artifactId>
                 </exclude>
               </dependencyExcludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>single</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/config/jboss-modules-assembly.xml</descriptor>
+              </descriptors>
             </configuration>
           </plugin>
         </plugins>
