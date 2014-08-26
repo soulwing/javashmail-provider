@@ -41,6 +41,7 @@ your ```server.xml```
   </GlobalNamingResources>
   ...
 </server>
+```
 
 Add a link to the mail resource to your application's context configuration:
 
