@@ -12,8 +12,8 @@
     
     <apply-to-module>
       <dependencies>
-        <module name="javax.mail" />
-        <module name="javax.activation"/>
+        <module name="javax.mail.api" />
+        <module name="javax.activation.api"/>
         <module name="javax.api" />
       </dependencies>
     </apply-to-module>
