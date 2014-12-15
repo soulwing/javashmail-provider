@@ -166,9 +166,9 @@ Fixed Recipient Provider
 
 The Fixed Recipient Provider is a JavaMail transport provider that directs all
 sent messages to one or more fixed recipients, ignoring any recipient addresses
-specified in the call to the `sendMessage` method on the `Transport` class.  Because only 
-the envelope recipients manipulated, the message recipients in the message header 
-are unaffected.  This allows you to deliver all messages to a fixed mailbox or 
+specified in the call to the `sendMessage` method on the `Transport` class.  Because 
+only the envelope recipients are manipulated, the message recipients in the message 
+header are unaffected.  This allows you to deliver all messages to a fixed mailbox or 
 (mailboxes) while still having the original recipient headers intact to inspect 
 for correctness.
 
