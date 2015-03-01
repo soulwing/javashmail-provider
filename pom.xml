@@ -7,7 +7,7 @@
   </parent>
   <artifactId>javashmail-provider</artifactId>
   <version>1.0.5-SNAPSHOT</version>
-  <name></name>
+  <name>JavaShmail Provider</name>
   <description>
     A JavaMail provider with useful shims and shams for application testing.
   </description>
