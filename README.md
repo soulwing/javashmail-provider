@@ -1,6 +1,9 @@
 javashmail-provider
 ===================
 
+[![Build Status](https://travis-ci.org/soulwing/javashmail-provider.svg?branch=master)](https://travis-ci.org/soulwing/javashmail-provider)
+
+
 A JavaMail provider with useful shims and shams for application testing.  When
 testing applications, it is often necessary to prevent e-mail messages (e.g. 
 notifications) from being delivered to real recipients.  This JavaMail provider
