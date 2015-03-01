@@ -3,7 +3,6 @@ javashmail-provider
 
 [![Build Status](https://travis-ci.org/soulwing/javashmail-provider.svg?branch=master)](https://travis-ci.org/soulwing/javashmail-provider)
 
-
 A JavaMail provider with useful shims and shams for application testing.  When
 testing applications, it is often necessary to prevent e-mail messages (e.g. 
 notifications) from being delivered to real recipients.  This JavaMail provider
@@ -20,10 +19,12 @@ by your application.
 Installation
 ------------
 
-The `javashmail-provider` can be easily installed in your container.
+The `javashmail-provider` can be easily installed in your container.  The 
+necessary artifacts can be installed by downloading them from 
+[Maven Central] 
+(http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider)
 
 ### Tomcat Installation
-
 Copy the `javashmail-provider.x.y.z.jar` file into Tomcat's `lib`
 directory.  Also make sure that JavaMail's `mail.jar` and `activation.jar` are
 in Tomcat's `lib` directory.
@@ -34,9 +35,10 @@ as `ClassNotFoundException` or `NoClassDefFoundError` at runtime.
 
 ### Wildfly/JBossAS Installation
 
-The `javashmail-provider-x.y.z-modules.tar.gz` file located in the 
-`target` folder (after a successful build using Maven) contains a Wildfly/JBossAS
-module.  Untar this file inside of the top-level directory of your server 
+The `javashmail-provider-x.y.z-modules.tar.gz` contains a Wildfly/JBossAS
+module. 
+
+Untar this file inside of the top-level directory of your server 
 installation.  This will properly install the provider in the `modules` 
 subdirectory.
 
