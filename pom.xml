@@ -3,62 +3,94 @@
   <parent>
     <groupId>org.soulwing</groupId>
     <artifactId>soulwing-parent</artifactId>
-    <version>1.0.0</version>
+    <version>4</version>
   </parent>
   <artifactId>javashmail-provider</artifactId>
   <version>1.0.5-SNAPSHOT</version>
-  <name>${project.artifactId}</name>
+  <name></name>
   <description>
     A JavaMail provider with useful shims and shams for application testing.
   </description>
-  <scm>
-    <connection>scm:git:git@github.com:soulwing/javashmail-provider.git</connection>
-    <developerConnection>${project.scm.connection}</developerConnection>
-    <url>https://github.com/soulwing/javashmail-provider</url>
-    <tag>REL-1.0.0</tag>
-  </scm>
+  <url>https://github.com/soulwing/javashmail-provider</url>
+  <properties>
+    <module.name>org.soulwing.pinject</module.name>
+    <module.slot>main</module.slot>
+    <module.path>org/soulwing/pinject</module.path>
+    <module.directory>${project.build.directory}/modules/${module.path}/${module.slot}</module.directory>
+  </properties>
   <build>
     <plugins>
       <plugin>
-        <groupId>de.smartics.maven.plugin</groupId>
-        <artifactId>smartics-jboss-modules-maven-plugin</artifactId>
+        <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>create-modules-archive</id>
+            <id>copy-module-descriptor</id>
             <goals>
-              <goal>create-modules-archive</goal>
+              <goal>copy-resources</goal>
             </goals>
-            <phase>package</phase>
+            <phase>process-resources</phase>
+            <configuration>
+              <outputDirectory>${module.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/module</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>**/*.xml</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/module</directory>
+                  <filtering>false</filtering>
+                  <excludes>
+                    <exclude>**/*.xml</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <attach>true</attach>
-          <dependencyExcludes>
-            <exclude>
-              <groupId>javax.mail</groupId>
-              <artifactId>javax.mail-api</artifactId>
-            </exclude>
-          </dependencyExcludes>
-        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-module-artifact</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <copy file="${project.build.directory}/${project.build.finalName}.jar" 
+                  todir="${module.directory}/" force="true"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>single</id>
+            <id>create-modules-assembly</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
+            <configuration>
+              <formats>
+                <format>tar.gz</format>
+                <format>zip</format>
+              </formats>
+              <descriptors>
+                <descriptor>src/assembly/modules-assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/config/jboss-modules-assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
       </plugin>
-    </plugins>
+    </plugins>  
   </build>
   <dependencies>
     <dependency>
