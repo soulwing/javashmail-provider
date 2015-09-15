@@ -20,9 +20,9 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <module.name>org.soulwing.pinject</module.name>
+    <module.name>org.soulwing.mail</module.name>
     <module.slot>main</module.slot>
-    <module.path>org/soulwing/pinject</module.path>
+    <module.path>org/soulwing/mail</module.path>
     <module.directory>${project.build.directory}/modules/${module.path}/${module.slot}</module.directory>
   </properties>
   <build>
