@@ -22,7 +22,7 @@ Installation
 The `javashmail-provider` can be easily installed in your container.  The 
 necessary artifacts can be installed by downloading them from 
 [Maven Central] 
-(http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider)
+(http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider).
 
 ### Tomcat Installation
 Copy the `javashmail-provider.x.y.z.jar` file into Tomcat's `lib`
