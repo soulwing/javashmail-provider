@@ -188,12 +188,12 @@ These properties must be set on the `javax.mail.Session` object in order to
 use the fixed recipient transport.
 
 * `mail.transport.protocol` -- set this to `rcpt`
-* `mail.rcpt.delegate` -- fully-qualified JNDI name for `Session` resource for
-   the transport delegate (usually using the `smtp` transport)
-* `mail.rcpt.address` -- address that will be used as the envelope recipient for
-  all messages sent via the fixed recipient transport provider (this can be more
-  than one address using any legitimate RFC-822 address syntax such as would be
-  used in a `To:` header
+* `mail.rcpt.delegate` -- fully-qualified JNDI name for a `Session` resource from
+  which a transport delegate (usually using the `smtp` transport) can be obtained
+* `mail.rcpt.address` -- address(es) that will be used as the envelope recipient for
+  all messages sent via the fixed recipient transport provider; more
+  than one address can be specified using any legitimate RFC-822 address syntax such 
+  as would be used in a `To:` header
 
 ### Tomcat Configuration
 
