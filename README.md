@@ -7,7 +7,7 @@ A JavaMail provider with useful shims and shams for application testing.  When
 testing applications, it is often necessary to prevent e-mail messages (e.g. 
 notifications) from being delivered to real recipients.  This JavaMail provider
 allows you to simply write sent messages to a file (instead of delivering them)
-or to direct messages to fixed recipient (instead of delivering them to the
+or to direct messages to a fixed recipient (instead of delivering them to the
 actual recipients).
 
 Like any JavaMail provider `javashmail-provider` can be used directly by simply
