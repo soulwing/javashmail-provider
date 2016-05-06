@@ -2,6 +2,8 @@ javashmail-provider
 ===================
 
 [![Build Status](https://travis-ci.org/soulwing/javashmail-provider.svg?branch=master)](https://travis-ci.org/soulwing/javashmail-provider)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soulwing/javashmail-provider/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider*)
+
 
 A JavaMail provider with useful shims and shams for application testing.  When
 testing applications, it is often necessary to prevent e-mail messages (e.g. 
