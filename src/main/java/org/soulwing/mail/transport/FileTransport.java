@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,7 +32,6 @@ import javax.mail.URLName;
 
 /**
  * A {@link Transport} that appends messages to a file.
- *
  * @author Carl Harris
  */
 public class FileTransport extends Transport {
@@ -44,9 +42,9 @@ public class FileTransport extends Transport {
 
   private final int CR = '\r';
   private final int LF = '\n';
-  
+
   private final SessionProperties properties;
-  
+
   /**
    * Constructs a new instance.
    * @param session session to associate with this transport
@@ -55,6 +53,25 @@ public class FileTransport extends Transport {
   public FileTransport(Session session, URLName urlname) {
     super(session, urlname);
     this.properties = new SessionProperties(session);
+  }
+
+  @Override
+  public void connect() throws MessagingException {
+  }
+
+  @Override
+  public void connect(String host, String user, String password)
+      throws MessagingException {
+  }
+
+  @Override
+  public void connect(String user, String password)
+      throws MessagingException {
+  }
+
+  @Override
+  public synchronized void connect(String host, int port, String user,
+      String password) throws MessagingException {
   }
 
   /**
@@ -91,7 +108,7 @@ public class FileTransport extends Transport {
     }
   }
 
-  private byte[] createMessageData(Message message) throws MessagingException, 
+  private byte[] createMessageData(Message message) throws MessagingException,
       IOException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     message.writeTo(outputStream);

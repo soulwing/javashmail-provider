@@ -80,8 +80,24 @@ public class FixedRecipientTransport extends Transport {
           + Arrays.asList(recipients));
 
       Transport delegate = session.getTransport();
-      delegate.sendMessage(message, recipients);
-      
+
+      final boolean connected = delegate.isConnected();
+      try {
+        if (!connected) {
+          delegate.connect();
+        }
+        delegate.sendMessage(message, recipients);
+      }
+      finally {
+        if (!connected) {
+          try {
+            delegate.close();
+          }
+          catch (MessagingException ex) {
+            assert true;  // just ignore it
+          }
+        }
+      }
     }
     catch (NamingException ex) {
       throw new MessagingException("lookup for " + delegateName + " failed", ex);
@@ -93,6 +109,7 @@ public class FixedRecipientTransport extends Transport {
     Session session = (Session) 
         JndiObjectLocator.getInstance().lookup(delegateName);      
     if (session == null) {
+      logger.severe("cannot locate session delegate: " + delegateName);
       throw new MessagingException("session not found: " + delegateName);
     }
     return session;

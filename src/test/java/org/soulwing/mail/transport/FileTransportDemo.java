@@ -26,6 +26,7 @@ public class FileTransportDemo {
     message.setText("A message from JavaShmail.");
     
     Transport transport = session.getTransport();
+    transport.connect();
     transport.sendMessage(message, message.getAllRecipients());
   }  
 
