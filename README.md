@@ -2,12 +2,14 @@ javashmail-provider
 ===================
 
 [![Build Status](https://travis-ci.org/soulwing/javashmail-provider.svg?branch=master)](https://travis-ci.org/soulwing/javashmail-provider)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soulwing/javashmail-provider/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider*)
+
 
 A JavaMail provider with useful shims and shams for application testing.  When
 testing applications, it is often necessary to prevent e-mail messages (e.g. 
 notifications) from being delivered to real recipients.  This JavaMail provider
 allows you to simply write sent messages to a file (instead of delivering them)
-or to direct messages to fixed recipient (instead of delivering them to the
+or to direct messages to a fixed recipient (instead of delivering them to the
 actual recipients).
 
 Like any JavaMail provider `javashmail-provider` can be used directly by simply
@@ -22,7 +24,7 @@ Installation
 The `javashmail-provider` can be easily installed in your container.  The 
 necessary artifacts can be installed by downloading them from 
 [Maven Central] 
-(http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider)
+(http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.soulwing%20a%3Ajavashmail-provider).
 
 ### Tomcat Installation
 Copy the `javashmail-provider.x.y.z.jar` file into Tomcat's `lib`
@@ -188,12 +190,12 @@ These properties must be set on the `javax.mail.Session` object in order to
 use the fixed recipient transport.
 
 * `mail.transport.protocol` -- set this to `rcpt`
-* `mail.rcpt.delegate` -- fully-qualified JNDI name for `Session` resource for
-   the transport delegate (usually using the `smtp` transport)
-* `mail.rcpt.address` -- address that will be used as the envelope recipient for
-  all messages sent via the fixed recipient transport provider (this can be more
-  than one address using any legitimate RFC-822 address syntax such as would be
-  used in a `To:` header
+* `mail.rcpt.delegate` -- fully-qualified JNDI name for a `Session` resource from
+  which a transport delegate (usually using the `smtp` transport) can be obtained
+* `mail.rcpt.address` -- address(es) that will be used as the envelope recipient for
+  all messages sent via the fixed recipient transport provider; more
+  than one address can be specified using any legitimate RFC-822 address syntax such 
+  as would be used in a `To:` header
 
 ### Tomcat Configuration
 
