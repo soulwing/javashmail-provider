@@ -29,12 +29,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
@@ -49,23 +47,26 @@ import org.junit.Test;
  */
 public class FileTransportTest {
 
+  private SessionFactory sessionFactory;
+
   private File file;
   
   @Before  
   public void setUp() throws Exception {
-    file = File.createTempFile("mail", ".txt");    
+    file = File.createTempFile("mail", ".txt");
+    sessionFactory = new SessionFactory(defaultProperties(file));
   }
   
   @After
   public void tearDown() throws Exception {
-    file.delete();
+    assertThat(file.delete(), is(true));
   }
 
   @Test
   public void testSendMessage() throws Exception {
-    Session session = newSession();
+    Session session = sessionFactory.newSession();
     Transport transport = session.getTransport();
-    MimeMessage message = newMessage("Test message", session);
+    Message message = MessageFactory.newMessage("Test message", session);
     transport.sendMessage(message, message.getAllRecipients());
     MimeMessage result = readMessageFromFile(file, session);
     assertThat(result.getFrom(), is(equalTo(message.getFrom())));
@@ -76,11 +77,11 @@ public class FileTransportTest {
 
   @Test
   public void testAppendMessage() throws Exception {
-    Session session = newSession(FileTransport.APPEND, "true");
+    Session session = sessionFactory.newSession(FileTransport.APPEND, "true");
     Transport transport = session.getTransport();
-    MimeMessage message1 = newMessage("Message 1", session);
+    Message message1 = MessageFactory.newMessage("Message 1", session);
     transport.sendMessage(message1, message1.getAllRecipients());
-    MimeMessage message2 = newMessage("Message 2", session);
+    Message message2 = MessageFactory.newMessage("Message 2", session);
     transport.sendMessage(message2, message2.getAllRecipients());
     
     BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -95,11 +96,11 @@ public class FileTransportTest {
 
   @Test
   public void testOverwriteMessage() throws Exception {
-    Session session = newSession(FileTransport.APPEND, "false");
+    Session session = sessionFactory.newSession(FileTransport.APPEND, "false");
     Transport transport = session.getTransport();
-    MimeMessage message1 = newMessage("Message 1", session);
+    Message message1 = MessageFactory.newMessage("Message 1", session);
     transport.sendMessage(message1, message1.getAllRecipients());
-    MimeMessage message2 = newMessage("Message 2", session);
+    Message message2 = MessageFactory.newMessage("Message 2", session);
     transport.sendMessage(message2, message2.getAllRecipients());
     
     BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -112,18 +113,7 @@ public class FileTransportTest {
     }
   }
 
-  private MimeMessage newMessage(String subject, Session session) 
-      throws MessagingException, AddressException {
-    MimeMessage message = new MimeMessage(session);
-    message.setFrom(new InternetAddress("nobody@nowhere.net"));
-    message.addRecipient(RecipientType.TO, 
-        new InternetAddress("nobody@nowhere.net"));
-    message.setSubject(subject);
-    message.setText("This is a test. This is only a test.");
-    return message;
-  }
-  
-  private MimeMessage readMessageFromFile(File file, Session session) 
+  private MimeMessage readMessageFromFile(File file, Session session)
       throws IOException, MessagingException {
     InputStream inputStream = new FileInputStream(file);
     try {
@@ -148,21 +138,13 @@ public class FileTransportTest {
     return false;
   }
 
-  private Session newSession(String... pairs) throws MessagingException {
-    Properties properties = defaultProperties();
-    for (int i = 0; i < pairs.length / 2; i++) {
-      properties.setProperty(pairs[2*i], pairs[2*i + 1]);
-    }
-    return Session.getInstance(properties);
-  }
-  
-  private Properties defaultProperties() {
+  private static Properties defaultProperties(File file) {
     Properties properties = new Properties();
     properties.setProperty(FileTransport.FILE_PATH, file.toString());
     properties.setProperty("mail.transport.protocol", "file");
     return properties;
   }
-  
+
 }
 
 
