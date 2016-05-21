@@ -1,0 +1,1 @@
+protocol=mock; type=transport; class=org.soulwing.mail.transport.DelegatingMockTransport; vendor=Soulwing.ORG

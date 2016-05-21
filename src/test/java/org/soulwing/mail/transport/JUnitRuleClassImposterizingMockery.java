@@ -18,22 +18,26 @@
  */
 package org.soulwing.mail.transport;
 
-import javax.naming.NamingException;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.jmock.lib.concurrent.Synchroniser;
+import org.jmock.lib.legacy.ClassImposteriser;
 
 /**
- * A JNDI lookup service provider.
+ * A {@link JUnitRuleMockery} that can mock classes.
  *
  * @author Carl Harris
  */
-interface JndiObjectLocator {
+public class JUnitRuleClassImposterizingMockery extends JUnitRuleMockery {
 
-  /**
-   * Looks up the object associated with the given name relative to a
-   * JNDI {@link javax.naming.InitialContext}.
-   * @param name name of object to locate
-   * @return bound object
-   * @throws NamingException
-   */
-  Object lookup(String name) throws NamingException;
+  private final Synchroniser synchroniser = new Synchroniser();
+
+  {
+    setImposteriser(ClassImposteriser.INSTANCE);
+    setThreadingPolicy(synchroniser);
+  }
+
+  public Synchroniser getSynchroniser() {
+    return synchroniser;
+  }
 
 }

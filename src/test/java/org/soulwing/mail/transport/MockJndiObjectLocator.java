@@ -21,19 +21,25 @@ package org.soulwing.mail.transport;
 import javax.naming.NamingException;
 
 /**
- * A JNDI lookup service provider.
+ * A mock {@link JndiObjectLocator}.
  *
  * @author Carl Harris
  */
-interface JndiObjectLocator {
+public class MockJndiObjectLocator implements JndiObjectLocator {
 
-  /**
-   * Looks up the object associated with the given name relative to a
-   * JNDI {@link javax.naming.InitialContext}.
-   * @param name name of object to locate
-   * @return bound object
-   * @throws NamingException
-   */
-  Object lookup(String name) throws NamingException;
+  private static Object object;
+
+  public static Object getObject() {
+    return object;
+  }
+
+  public static void setObject(Object object) {
+    MockJndiObjectLocator.object = object;
+  }
+
+  @Override
+  public Object lookup(String name) throws NamingException {
+    return object;
+  }
 
 }
