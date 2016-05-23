@@ -60,7 +60,7 @@ public class FileTransport extends Transport {
   @Override
   public synchronized void connect(String host, int port, String user,
       String password) throws MessagingException {
-    super.connect("host", -1, "user", "password");
+    super.connect(properties.getRequiredProperty(FILE_PATH), -1, null, null);
   }
 
   @Override
@@ -132,6 +132,11 @@ public class FileTransport extends Transport {
     }
     outputStream.write(CR);
     outputStream.write(LF);
+  }
+
+  @Override
+  public String toString() {
+    return "file:" + properties.getProperty(FILE_PATH);
   }
 
 }
