@@ -21,6 +21,8 @@ package org.soulwing.mail.transport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,10 +31,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.event.ConnectionEvent;
+import javax.mail.event.ConnectionListener;
+import javax.mail.event.TransportEvent;
+import javax.mail.event.TransportListener;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
@@ -46,6 +56,9 @@ import org.junit.Test;
  * @author Carl Harris
  */
 public class FileTransportTest {
+
+  private static final long LISTENER_WAIT = 500;
+  private static final long MAX_LISTENER_WAIT = 10*LISTENER_WAIT;
 
   private SessionFactory sessionFactory;
 
@@ -63,11 +76,33 @@ public class FileTransportTest {
   }
 
   @Test
+  public void testConnect() throws Exception {
+    Session session = sessionFactory.newSession();
+    Transport transport = session.getTransport();
+    MockConnectionListener listener = new MockConnectionListener();
+    transport.addConnectionListener(listener);
+    transport.connect();
+    ConnectionEvent event = listener.awaitEvent();
+    assertThat(event, is(not(nullValue())));
+    assertThat(event.getType(), is(equalTo(ConnectionEvent.OPENED)));
+    listener.reset();
+    transport.close();
+    event = listener.awaitEvent();
+    assertThat(event, is(not(nullValue())));
+    assertThat(event.getType(), is(equalTo(ConnectionEvent.CLOSED)));
+  }
+
+  @Test
   public void testSendMessage() throws Exception {
     Session session = sessionFactory.newSession();
     Transport transport = session.getTransport();
+    MockTransportListener listener = new MockTransportListener();
+    transport.addTransportListener(listener);
     Message message = MessageFactory.newMessage("Test message", session);
     transport.sendMessage(message, message.getAllRecipients());
+    TransportEvent event = listener.awaitEvent();
+    assertThat(event, is(not(nullValue())));
+    assertThat(event.getType(), is(equalTo(TransportEvent.MESSAGE_DELIVERED)));
     MimeMessage result = readMessageFromFile(file, session);
     assertThat(result.getFrom(), is(equalTo(message.getFrom())));
     assertThat(result.getRecipients(RecipientType.TO), 
@@ -143,6 +178,88 @@ public class FileTransportTest {
     properties.setProperty(FileTransport.FILE_PATH, file.toString());
     properties.setProperty("mail.transport.protocol", "file");
     return properties;
+  }
+
+  private static abstract class AbstractEventListener<T> {
+
+    private final Lock lock = new ReentrantLock();
+    private final Condition readyCondition = lock.newCondition();
+
+    private T event;
+
+    void reset() {
+      event = null;
+    }
+
+    T awaitEvent() throws InterruptedException {
+      lock.lock();
+      try {
+        final long start = System.currentTimeMillis();
+        long now = start;
+        while (event == null && (now - start) < MAX_LISTENER_WAIT) {
+          readyCondition.await(LISTENER_WAIT, TimeUnit.MILLISECONDS);
+          now = System.currentTimeMillis();
+        }
+        return event;
+      }
+      finally {
+        lock.unlock();
+      }
+    }
+
+    void receiveEvent(T event) {
+      lock.lock();
+      try {
+        this.event = event;
+        readyCondition.signalAll();
+      }
+      finally {
+        lock.unlock();
+      }
+    }
+
+  }
+
+  private static class MockConnectionListener
+      extends AbstractEventListener<ConnectionEvent>
+      implements ConnectionListener {
+
+    @Override
+    public void opened(ConnectionEvent connectionEvent) {
+      receiveEvent(connectionEvent);
+    }
+
+    @Override
+    public void disconnected(ConnectionEvent connectionEvent) {
+      receiveEvent(connectionEvent);
+    }
+
+    @Override
+    public void closed(ConnectionEvent connectionEvent) {
+      receiveEvent(connectionEvent);
+    }
+
+  }
+
+  private static class MockTransportListener
+      extends AbstractEventListener<TransportEvent>
+      implements TransportListener {
+
+    @Override
+    public void messageDelivered(TransportEvent transportEvent) {
+      receiveEvent(transportEvent);
+    }
+
+    @Override
+    public void messageNotDelivered(TransportEvent transportEvent) {
+      receiveEvent(transportEvent);
+    }
+
+    @Override
+    public void messagePartiallyDelivered(TransportEvent transportEvent) {
+      receiveEvent(transportEvent);
+    }
+
   }
 
 }

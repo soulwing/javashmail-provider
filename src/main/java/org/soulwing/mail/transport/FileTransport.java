@@ -29,6 +29,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.URLName;
+import javax.mail.event.TransportEvent;
 
 /**
  * A {@link Transport} that appends messages to a file.
@@ -55,23 +56,17 @@ public class FileTransport extends Transport {
     this.properties = new SessionProperties(session);
   }
 
-  @Override
-  public void connect() throws MessagingException {
-  }
-
-  @Override
-  public void connect(String host, String user, String password)
-      throws MessagingException {
-  }
-
-  @Override
-  public void connect(String user, String password)
-      throws MessagingException {
-  }
 
   @Override
   public synchronized void connect(String host, int port, String user,
       String password) throws MessagingException {
+    super.connect("host", -1, "user", "password");
+  }
+
+  @Override
+  protected boolean protocolConnect(String host, int port, String user,
+      String password) throws MessagingException {
+    return true;
   }
 
   /**
@@ -84,6 +79,8 @@ public class FileTransport extends Transport {
     boolean append = properties.getBooleanProperty(APPEND, true);
     try {
       writeMessage(message, path, append);
+      notifyTransportListeners(TransportEvent.MESSAGE_DELIVERED,
+          recipients, new Address[0], new Address[0], message);
     }
     catch (IOException ex) {
       throw new MessagingException("error writing message to file", ex);
