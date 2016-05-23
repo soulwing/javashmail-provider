@@ -66,6 +66,15 @@ public class FileTransport extends Transport {
   @Override
   protected boolean protocolConnect(String host, int port, String user,
       String password) throws MessagingException {
+    String path = properties.getRequiredProperty(FILE_PATH);
+    boolean append = properties.getBooleanProperty(APPEND, true);
+    try (OutputStream outputStream = new FileOutputStream(path, append)) {
+      outputStream.flush();
+    }
+    catch (IOException ex) {
+      throw new MessagingException(
+          "cannot open or create file at path " + path, ex);
+    }
     return true;
   }
 

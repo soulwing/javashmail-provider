@@ -81,7 +81,12 @@ public class FileTransportTest {
     Transport transport = session.getTransport();
     MockConnectionListener listener = new MockConnectionListener();
     transport.addConnectionListener(listener);
+
+    assertThat(file.delete(), is(true));
+    assertThat(file.exists(), is(false));
     transport.connect();
+    assertThat(file.exists(), is(true));
+
     ConnectionEvent event = listener.awaitEvent();
     assertThat(event, is(not(nullValue())));
     assertThat(event.getType(), is(equalTo(ConnectionEvent.OPENED)));
