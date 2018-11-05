@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -113,6 +114,23 @@ public class FileTransportTest {
     assertThat(result.getRecipients(RecipientType.TO), 
         is(equalTo(message.getRecipients(RecipientType.TO))));
     assertThat(result.getSubject(), is(equalTo(message.getSubject())));
+  }
+
+  @Test
+  public void testSendMessageWhenErrorRequested() throws Exception {
+    Session session = sessionFactory.newSession();
+    Transport transport = session.getTransport();
+    MockTransportListener listener = new MockTransportListener();
+    transport.addTransportListener(listener);
+    Message message = MessageFactory.newMessage("Test message", session);
+    message.setHeader(ErrorHeader.ERROR_HEADER, "test error");
+    try {
+      transport.sendMessage(message, message.getAllRecipients());
+      fail("expected MessagingException");
+    }
+    catch (MessagingException ex) {
+      assertThat(ex.getMessage(), is(equalTo("test error")));
+    }
   }
 
   @Test

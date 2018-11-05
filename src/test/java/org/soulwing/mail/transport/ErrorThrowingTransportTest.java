@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,9 +63,7 @@ public class ErrorThrowingTransportTest {
 
   private SessionFactory sessionFactory;
 
-  private File file;
-  
-  @Before  
+  @Before
   public void setUp() throws Exception {
     sessionFactory = new SessionFactory(defaultProperties());
   }
@@ -96,6 +95,23 @@ public class ErrorThrowingTransportTest {
     transport.addTransportListener(listener);
     Message message = MessageFactory.newMessage("Test message", session);
     transport.sendMessage(message, message.getAllRecipients());
+  }
+
+  @Test
+  public void testSendMessageWithCustomErrorMessage() throws Exception {
+    Session session = sessionFactory.newSession();
+    Transport transport = session.getTransport();
+    MockTransportListener listener = new MockTransportListener();
+    transport.addTransportListener(listener);
+    Message message = MessageFactory.newMessage("Test message", session);
+    message.setHeader(ErrorHeader.ERROR_HEADER, "Test error");
+    try {
+      transport.sendMessage(message, message.getAllRecipients());
+      fail("expected MessagingException");
+    }
+    catch (MessagingException ex) {
+      assertThat(ex.getMessage(), is(equalTo("Test error")));
+    }
   }
 
   private static Properties defaultProperties() {

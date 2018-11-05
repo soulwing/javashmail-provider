@@ -84,6 +84,9 @@ public class FileTransport extends Transport {
   @Override
   public void sendMessage(Message message, Address[] recipients)
       throws MessagingException {
+    MessagingException mex = ErrorHeader.getErrorToThrow(message);
+    if (mex != null) throw mex;
+
     String path = properties.getRequiredProperty(FILE_PATH);
     boolean append = properties.getBooleanProperty(APPEND, true);
     try {

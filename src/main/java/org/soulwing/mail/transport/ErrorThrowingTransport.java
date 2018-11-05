@@ -50,8 +50,10 @@ public class ErrorThrowingTransport extends Transport {
 
   @Override
   public void sendMessage(Message message, Address[] addresses)
-    throws MessagingException {
-    throw new MessagingException("transport error");
+      throws MessagingException {
+    MessagingException mex = ErrorHeader.getErrorToThrow(message);
+    if (mex == null) mex = new MessagingException("transport error");
+    throw mex;
   }
 
 }
