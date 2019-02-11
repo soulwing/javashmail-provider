@@ -78,11 +78,8 @@ public class FileTransport extends Transport {
     return true;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public void sendMessage(Message message, Address[] recipients)
+  public synchronized void sendMessage(Message message, Address[] recipients)
       throws MessagingException {
     MessagingException mex = ErrorHeader.getErrorToThrow(message);
     if (mex != null) throw mex;
