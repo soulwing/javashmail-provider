@@ -287,6 +287,7 @@ use the timeout simulating transport.
 * `mail.transport.protocol` -- set this to `timeout`
 * `timeout.connectionTimeout` -- set this to a value greater 0 to simulate a timeout during connection creation
 * `timeout.messageTimeout` -- set this to a value greater 0 to simulate a timeout during message sending
+
 Note that the TimeoutTransport derives from the FileTransport class and therefore file transport properties may also 
 be used. Setting both `timeout.connectionTimeout` and `timeout.messageTimeout` to values less than 0 effectively
 causes the TimeoutTransport to act as a pass through to FileTransport.
