@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -36,6 +37,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.event.ConnectionEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,9 +53,17 @@ public class ErrorThrowingTransportTest {
 
   private SessionFactory sessionFactory;
 
+  private File file;
+
   @Before
   public void setUp() throws Exception {
-    sessionFactory = new SessionFactory(defaultProperties());
+    file = File.createTempFile("mail", ".txt");
+    sessionFactory = new SessionFactory(defaultProperties(file));
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    assertThat(file.delete(), is(true));
   }
 
   @Test
@@ -76,8 +86,9 @@ public class ErrorThrowingTransportTest {
   }
 
   @Test(expected = MessagingException.class)
-  public void testSendMessage() throws Exception {
-    Session session = sessionFactory.newSession();
+  public void testSendMessageWithDefaultMessage() throws Exception {
+    Session session = sessionFactory.newSession("mail.error.message",
+        "default message");
     Transport transport = session.getTransport();
     MockTransportListener listener = new MockTransportListener();
     transport.addTransportListener(listener);
@@ -102,9 +113,22 @@ public class ErrorThrowingTransportTest {
     }
   }
 
-  private static Properties defaultProperties() {
+  @Test
+  public void testSendMessageWhenNoErrorMessage() throws Exception {
+    Session session = sessionFactory.newSession();
+    Transport transport = session.getTransport();
+    MockTransportListener listener = new MockTransportListener();
+    transport.addTransportListener(listener);
+    Message message = MessageFactory.newMessage("Test message", session);
+    transport.sendMessage(message, message.getAllRecipients());
+  }
+
+
+  private static Properties defaultProperties(File file) {
     final Properties properties = new Properties();
     properties.setProperty("mail.transport.protocol", "error");
+    properties.setProperty("mail.error.delegate.file.path", file.toString());
+    properties.setProperty("mail.error.delegate.transport.protocol", "file");
     return properties;
   }
 

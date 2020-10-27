@@ -26,32 +26,32 @@ import javax.mail.Transport;
 import javax.mail.URLName;
 
 /**
- * A JavaMail {@link Transport} that throws an exception on an
- * attempt to send a message.
+ * A JavaMail {@link Transport} that times out when connecting or sending
+ * a message
  *
- * @author Carl Harris
+ * @author Chris Beckey
  */
-public class TimeoutThrowingTransport extends FileTransport {
+public class TimeoutThrowingTransport extends DelegatingTransport {
+
   private final long connectionTimeout;
   private final long messageTimeout;
 
   public TimeoutThrowingTransport(Session session, URLName urlname) {
     super(session, urlname);
 
-    String connectionTimeoutValue = session.getProperty("timeout.connectionTimeout");
-    String messageTimeoutValue = session.getProperty("timeout.messageTimeout");
-
-    connectionTimeout = connectionTimeoutValue == null ? -1 : Long.valueOf(connectionTimeoutValue);
-    messageTimeout = messageTimeoutValue == null ? -1 : Long.valueOf(messageTimeoutValue);
+    SessionProperties properties = new SessionProperties(session);
+    connectionTimeout = properties.getLongProperty("timeout.connectionTimeout", -1);
+    messageTimeout = properties.getLongProperty("timeout.messageTimeout", -1);
   }
 
   @Override
   public void connect(String host, String user, String password) throws MessagingException {
     if (connectionTimeout > 0) {
       try {
-        Thread.currentThread().sleep(connectionTimeout);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+        Thread.sleep(connectionTimeout);
+      }
+      catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
       }
       throw new MessagingException("Timeout exception connecting to host");
     }
@@ -60,19 +60,14 @@ public class TimeoutThrowingTransport extends FileTransport {
   }
 
   @Override
-  protected boolean protocolConnect(String host, int port, String user, String password)
-      throws MessagingException {
-    return super.protocolConnect(host, port, user, password);
-  }
-
-  @Override
   public void sendMessage(Message message, Address[] addresses)
       throws MessagingException {
     if (messageTimeout > 0) {
       try {
-        Thread.currentThread().sleep(messageTimeout);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+        Thread.sleep(messageTimeout);
+      }
+      catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
       }
       throw new MessagingException("Timeout exception sending message");
     }

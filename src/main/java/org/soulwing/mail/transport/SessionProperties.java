@@ -18,6 +18,7 @@
  */
 package org.soulwing.mail.transport;
 
+import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 
@@ -28,16 +29,25 @@ import javax.mail.Session;
  */
 public class SessionProperties {
 
-  private final Session session;
+  private final Properties properties;
+
 
   /**
    * Constructs a new instance.
    * @param session
    */
   public SessionProperties(Session session) {
-    this.session = session;
+    this(session.getProperties());
   }
-  
+
+  /**
+   * Constructs a new instance.
+   * @param properties
+   */
+  public SessionProperties(Properties properties) {
+    this.properties = properties;
+  }
+
   /**
    * Gets a property value.
    * @param name name of the property
@@ -45,7 +55,7 @@ public class SessionProperties {
    *    name
    */
   public String getProperty(String name) {
-    return session.getProperty(name);
+    return properties.getProperty(name);
   }
   
   /**
@@ -81,6 +91,37 @@ public class SessionProperties {
     if ("no".equals(value) || "false".equals(value)) return false;
     throw new MessagingException("property " + name 
         + " allows either 'true' or 'false'");
+  }
+
+  /**
+   * Gets a boolean property value.
+   * @param name name of the property
+   * @param defaultValue value to return if none is set
+   * @return property value
+   */
+  public long getLongProperty(String name, long defaultValue) {
+    String value = getProperty(name);
+    if (value == null) return defaultValue;
+    return Long.valueOf(value);
+  }
+
+  /**
+   * Gets the collection of delegate properties from this properties collection.
+   * @param protocol name of the protocol for these session properties
+   * @return delegate properties (which may be empty)
+   */
+
+  public Properties getDelegateProperties(String protocol) {
+    final String prefix = String.format("mail.%s.delegate.", protocol);
+    final Properties properties = new Properties();
+    for (final Object key : this.properties.keySet()) {
+      final String name = (String) key;
+      if (name.startsWith(prefix)) {
+        final String targetName = name.replace(prefix, "mail.");
+        properties.setProperty(targetName, this.properties.getProperty(name));
+      }
+    }
+    return properties;
   }
 
   

@@ -1,7 +1,7 @@
 /*
- * File created on Nov 5, 2018
+ * File created on Oct 27, 2020
  *
- * Copyright (c) 2018 Carl Harris, Jr
+ * Copyright (c) 2020 Carl Harris, Jr
  * and others as noted
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,40 +18,40 @@
  */
 package org.soulwing.mail.transport;
 
-import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.URLName;
 
 /**
- * A JavaMail {@link javax.mail.Transport} that throws an exception on an
- * attempt to send a message.
+ * A transport that simply discards any message that is sent to it.
  *
  * @author Carl Harris
  */
-public class ErrorThrowingTransport extends DelegatingTransport {
+public class NullTransport extends Transport {
 
-  private static final String ERROR_PROVIDER = "mail.error";
-  public static final String DEFAULT_ERROR = ERROR_PROVIDER + ".message";
-
-  private final SessionProperties properties;
-
-  public ErrorThrowingTransport(Session session, URLName urlname) {
+  public NullTransport(Session session, URLName urlname) {
     super(session, urlname);
-    properties = new SessionProperties(session);
+  }
+
+  @Override
+  public synchronized void connect(String host, int port, String user,
+      String password) throws MessagingException {
+    super.connect("null transport", port, user, password);
+  }
+
+  @Override
+  protected boolean protocolConnect(String host, int port, String user,
+      String password) throws MessagingException {
+    return true;
   }
 
   @Override
   public void sendMessage(Message message, Address[] addresses)
       throws MessagingException {
-    MessagingException mex = ErrorHeader.getErrorToThrow(message);
-    if (mex == null && properties.getProperty(DEFAULT_ERROR) != null) {
-      mex = new MessagingException(properties.getProperty(DEFAULT_ERROR));
-    }
-    if (mex != null) throw mex;
-    super.sendMessage(message, addresses);
+    // no-op
   }
 
 }
