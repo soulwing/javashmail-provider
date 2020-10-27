@@ -273,3 +273,21 @@ Add a resource reference for the mail resource to your application's
 
 </jboss:jboss-web>
 ```
+
+Using Timeout Transport
+-----------------------
+The TimeoutTransport allows for the simulation of timeout errors on the connection and message sending. 
+The operations to connect and sendMessage will wait for the defined time and then throw a MessagingException.
+
+### Configuration Properties
+
+These properties must be set on the `javax.mail.Session` object in order to 
+use the timeout simulating transport.
+
+* `mail.transport.protocol` -- set this to `timeout`
+* `timeout.connectionTimeout` -- set this to a value greater 0 to simulate a timeout during connection creation
+* `timeout.messageTimeout` -- set this to a value greater 0 to simulate a timeout during message sending
+Note that the TimeoutTransport derives from the FileTransport class and therefore file transport properties may also 
+be used. Setting both `timeout.connectionTimeout` and `timeout.messageTimeout` to values less than 0 effectively
+causes the TimeoutTransport to act as a pass through to FileTransport.
+See TimeoutThrowingTransportTest for an example usage.

@@ -31,7 +31,7 @@ import javax.mail.URLName;
  *
  * @author Carl Harris
  */
-public class TimeoutThrowingTransport extends Transport {
+public class TimeoutThrowingTransport extends FileTransport {
   private final long connectionTimeout;
   private final long messageTimeout;
 
@@ -56,13 +56,13 @@ public class TimeoutThrowingTransport extends Transport {
       throw new MessagingException("Timeout exception connecting to host");
     }
 
-    super.connect("timeout host", -1, null, null);
+    super.connect(host, -1, user, password);
   }
 
   @Override
   protected boolean protocolConnect(String host, int port, String user, String password)
       throws MessagingException {
-    return true;
+    return super.protocolConnect(host, port, user, password);
   }
 
   @Override
@@ -76,6 +76,7 @@ public class TimeoutThrowingTransport extends Transport {
       }
       throw new MessagingException("Timeout exception sending message");
     }
+    super.sendMessage(message, addresses);
   }
 
 }
