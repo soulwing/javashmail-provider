@@ -1,3 +1,4 @@
 protocol=file; type=transport; class=org.soulwing.mail.transport.FileTransport; vendor=Soulwing.ORG
 protocol=rcpt; type=transport; class=org.soulwing.mail.transport.FixedRecipientTransport; vendor=Soulwing.ORG
 protocol=error; type=transport; class=org.soulwing.mail.transport.ErrorThrowingTransport; vendor=Soulwing.ORG
+protocol=timeout; type=transport; class=org.soulwing.mail.transport.TimeoutThrowingTransport; vendor=Soulwing.ORG
