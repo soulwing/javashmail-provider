@@ -89,12 +89,14 @@
                 <format>tar.gz</format>
                 <format>zip</format>
               </formats>
+              <tarLongFileMode>posix</tarLongFileMode>
               <descriptors>
                 <descriptor>src/assembly/modules-assembly.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
         </executions>
+
       </plugin>
     </plugins>  
   </build>
